@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Chessboard</title>
+    <title>Chessboard</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -31,14 +31,6 @@
             align-items: center;
         }
 
-        .cell:nth-child(even) {
-            background-color: #f0d9b5;
-        }
-
-        .cell:nth-child(odd) {
-            background-color: #b58863;
-        }
-
         .cell[data-color="white"] {
             background-color: #f0d9b5;
         }
@@ -50,54 +42,43 @@
         .piece {
             width: 50px;
             height: 50px;
-            position: absolute;
             cursor: pointer;
         }
 
-        .piece.white {
-            background-color: white;
-            border: 1px solid #000;
-            border-radius: 50%;
+        .cell.highlight {
+            outline: 2px solid yellow;
         }
-
-        .piece.black {
-            background-color: black;
-            border: 1px solid #fff;
-            border-radius: 50%;
-        }
-
     </style>
 </head>
 <body>
-    <div class="board" id="chessboard">
-        <!-- The cells will be dynamically created with JavaScript -->
-    </div>
+    <div class="board" id="chessboard"></div>
 
     <script>
-        // Create a chessboard with 64 cells
         const board = document.getElementById('chessboard');
 
-        // Create a simple 8x8 chess grid
+        // Create chessboard cells
         for (let i = 0; i < 64; i++) {
             const cell = document.createElement('div');
             cell.classList.add('cell');
             cell.dataset.index = i;
 
-            // Determine if the cell is black or white (based on the chessboard pattern)
             const row = Math.floor(i / 8);
             const col = i % 8;
-            if ((row + col) % 2 === 0) {
-                cell.dataset.color = 'white';
-            } else {
-                cell.dataset.color = 'black';
-            }
+            cell.dataset.color = (row + col) % 2 === 0 ? 'white' : 'black';
 
-            // Append the cell to the board
             board.appendChild(cell);
         }
 
-        // Create pieces (16 pieces, 8 white and 8 black)
+        // Define chess pieces
         const pieces = [
+            { color: 'white', type: 'rook', position: 0 },
+            { color: 'white', type: 'knight', position: 1 },
+            { color: 'white', type: 'bishop', position: 2 },
+            { color: 'white', type: 'king', position: 3 },
+            { color: 'white', type: 'queen', position: 4 },
+            { color: 'white', type: 'bishop', position: 5 },
+            { color: 'white', type: 'knight', position: 6 },
+            { color: 'white', type: 'rook', position: 7 },
             { color: 'white', type: 'pawn', position: 8 },
             { color: 'white', type: 'pawn', position: 9 },
             { color: 'white', type: 'pawn', position: 10 },
@@ -106,6 +87,14 @@
             { color: 'white', type: 'pawn', position: 13 },
             { color: 'white', type: 'pawn', position: 14 },
             { color: 'white', type: 'pawn', position: 15 },
+            { color: 'black', type: 'rook', position: 56 },
+            { color: 'black', type: 'knight', position: 57 },
+            { color: 'black', type: 'bishop', position: 58 },
+            { color: 'black', type: 'king', position: 59 },
+            { color: 'black', type: 'queen', position: 60 },
+            { color: 'black', type: 'bishop', position: 61 },
+            { color: 'black', type: 'knight', position: 62 },
+            { color: 'black', type: 'rook', position: 63 },
             { color: 'black', type: 'pawn', position: 48 },
             { color: 'black', type: 'pawn', position: 49 },
             { color: 'black', type: 'pawn', position: 50 },
@@ -116,47 +105,54 @@
             { color: 'black', type: 'pawn', position: 55 }
         ];
 
+        // Place pieces on the board
         pieces.forEach(piece => {
-            const pieceElement = document.createElement('div');
-            pieceElement.classList.add('piece', piece.color);
+            const pieceElement = document.createElement('img');
+            pieceElement.classList.add('piece');
             pieceElement.draggable = true;
-            pieceElement.dataset.color = piece.color;
-            pieceElement.dataset.position = piece.position;
+            pieceElement.src = `./images/${piece.color}_${piece.type}.jpg`;
+            pieceElement.alt = `${piece.color} ${piece.type}`;
 
-            // Position the piece on the correct cell based on its position
             const targetCell = document.querySelector(`.cell[data-index="${piece.position}"]`);
             targetCell.appendChild(pieceElement);
-
-            // Add drag event listeners for the pieces
-            pieceElement.addEventListener('dragstart', handleDragStart);
-            pieceElement.addEventListener('dragover', handleDragOver);
-            pieceElement.addEventListener('dragend', handleDragEnd);
         });
 
-        // Handle piece dragging
-        function handleDragStart(event) {
-            const pieceElement = event.target;
-            pieceElement.classList.add('dragging');
-            event.dataTransfer.setData('text', pieceElement.dataset.position);
-        }
+        // Drag-and-drop functionality
+        board.addEventListener('dragstart', event => {
+            if (event.target.classList.contains('piece')) {
+                event.dataTransfer.setData('text/plain', event.target.parentNode.dataset.index);
+            }
+        });
 
-        function handleDragOver(event) {
+        board.addEventListener('dragover', event => {
             event.preventDefault();
-            const targetCell = event.target;
-            if (targetCell.classList.contains('cell')) {
+            const targetCell = event.target.closest('.cell');
+            if (targetCell) {
                 targetCell.classList.add('highlight');
             }
-        }
+        });
 
-        function handleDragEnd(event) {
-            const pieceElement = event.target;
-            const targetCell = document.querySelector('.highlight');
-            if (targetCell && targetCell !== pieceElement.parentNode) {
-                targetCell.appendChild(pieceElement);
-                pieceElement.classList.remove('dragging');
+        board.addEventListener('dragleave', event => {
+            const targetCell = event.target.closest('.cell');
+            if (targetCell) {
                 targetCell.classList.remove('highlight');
             }
-        }
+        });
+
+        board.addEventListener('drop', event => {
+            event.preventDefault();
+            const fromIndex = event.dataTransfer.getData('text/plain');
+            const fromCell = document.querySelector(`.cell[data-index="${fromIndex}"]`);
+            const targetCell = event.target.closest('.cell');
+
+            if (fromCell && targetCell && fromCell !== targetCell) {
+                const piece = fromCell.querySelector('.piece');
+                if (piece) {
+                    targetCell.appendChild(piece);
+                    targetCell.classList.remove('highlight');
+                }
+            }
+        });
     </script>
 </body>
 </html>
