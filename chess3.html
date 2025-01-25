@@ -33,11 +33,11 @@
         }
 
         .cell[data-color="white"] {
-            background-color: #f0d9b5;
+           background-image: url("/home/daniaa/Downloads/white_pices.png");
         }
 
         .cell[data-color="black"] {
-            background-color: #b58863;
+            background-image: url("/home/daniaa/Downloads/black_pices.png");
         }
 
         .piece {
@@ -164,7 +164,7 @@
             const pieceElement = document.createElement('img');
             pieceElement.classList.add('piece');
             pieceElement.draggable = true;
-            pieceElement.src = `./images/${piece.color}_${piece.type}.jpg`;
+            pieceElement.src = `./images/${piece.color}_${piece.type}.png`;
             pieceElement.alt = `${piece.color} ${piece.type}`;
 
             const targetCell = document.querySelector(`.cell[data-index="${piece.position}"]`);
