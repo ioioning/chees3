@@ -1,3 +1,19 @@
+// Змінна для відстеження поточного гравця
+let currentTurn = 'white'; // Білі ходять першими
+
+// Функція для перевірки, чи можна зробити хід
+function isValidTurn(pieceColor) {
+    if (pieceColor !== currentTurn) {
+        alert(`Зараз хід ${currentTurn === 'white' ? 'білих' : 'чорних'}!`);
+        return false;
+    }
+    return true;
+}
+
+// Функція для перемикання черги ходу
+function switchTurn() {
+    currentTurn = currentTurn === 'white' ? 'black' : 'white';
+}
         const board = document.getElementById('chessboard');
         const modal = document.getElementById('promotionModal');
         let promotionTargetCell = null;
@@ -17,6 +33,7 @@
 
         // Define chess pieces
         const pieces = [
+
 		 { color: 'white', type: 'rook', position: 0 },
             { color: 'white', type: 'knight', position: 1 },
             { color: 'white', type: 'bishop', position: 2 },
@@ -162,14 +179,22 @@
                 const piece = fromCell.querySelector('.piece');
                 if (piece) {
                     // Remove any existing piece in the target cell
+			//TODO перевірити чи є фігура протилежного кольору
+			//TODO якщо фігура того самого кольору відмінити ход
                     if (targetCell.firstChild) {
                         targetCell.removeChild(targetCell.firstChild);
                     }
+			//TODO якщо хід не правильний то відмінити
+			// причини по якіх хід може бути не правильним:
+			// 1. хід не є в межах прямої видимості
+			// 2. не правильний колір(не наша черга)
+
 
                     targetCell.appendChild(piece);
                     targetCell.classList.remove('highlight');
 
                     // Show modal if a pawn reaches the last row
+			//TODO цей код працює тільки для білого пішака, треба зробити аналогічний код для чорного
                     if (piece.alt.includes('pawn') && (targetCell.dataset.index < 8 || targetCell.dataset.index > 55)) {
                         promotionTargetCell = targetCell;
                         showModal();
@@ -197,4 +222,3 @@
             }
             closeModal();
         }
-let currentTurn = 'white'; // Білі ходять першими
