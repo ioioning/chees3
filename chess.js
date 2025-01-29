@@ -4,7 +4,7 @@ let currentTurn = 'white'; // Білі ходять першими
 // Функція для перевірки, чи можна зробити хід
 function isValidTurn(pieceColor) {
     if (pieceColor !== currentTurn) {
-        alert(`Зараз хід ${currentTurn === 'white' ? 'білих' : 'чорних'}!`);
+        //alert(`Зараз хід ${currentTurn === 'white' ? 'білих' : 'чорних'}!`);
         return false;
     }
     return true;
@@ -74,6 +74,7 @@ function switchTurn() {
             pieceElement.classList.add('piece');
             pieceElement.draggable = true;
             pieceElement.src = `./images/${piece.color}_${piece.type}.png`;
+          //  pieceElement.     = `./images/${piece.color}_${piece.type}.png`;
             pieceElement.alt = `${piece.color} ${piece.type}`;
 
             const targetCell = document.querySelector(`.cell[data-index="${piece.position}"]`);
@@ -181,13 +182,15 @@ function switchTurn() {
                     // Remove any existing piece in the target cell
 			//TODO перевірити чи є фігура протилежного кольору
 			//TODO якщо фігура того самого кольору відмінити ход
+			// знайти колір фігури яку ми тримаємо
+			const pieceColor = piece.alt.split(' ')[0]
+        if (!isValidTurn(pieceColor)) return;
                     if (targetCell.firstChild) {
                         targetCell.removeChild(targetCell.firstChild);
                     }
+
 			//TODO якщо хід не правильний то відмінити
-			// причини по якіх хід може бути не правильним:
-			// 1. хід не є в межах прямої видимості
-			// 2. не правильний колір(не наша черга)
+			//якщо немає маркера не ходим
 
 
                     targetCell.appendChild(piece);
@@ -199,6 +202,8 @@ function switchTurn() {
                         promotionTargetCell = targetCell;
                         showModal();
                     }
+		// Після успішного ходу перемикаємо хід
+        switchTurn();
                 }
             }
             clearMarkers();
