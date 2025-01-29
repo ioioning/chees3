@@ -197,3 +197,4 @@
             }
             closeModal();
         }
+let currentTurn = 'white'; // Білі ходять першими
