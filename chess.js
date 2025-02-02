@@ -182,6 +182,10 @@ function switchTurn() {
                     // Remove any existing piece in the target cell
 			//TODO перевірити чи є фігура протилежного кольору
 			//TODO якщо фігура того самого кольору відмінити ход
+			if (!targetCell.querySelector('.marker').classList.contains('marker')) {
+    return;
+}
+
 			// знайти колір фігури яку ми тримаємо
 			const pieceColor = piece.alt.split(' ')[0]
         if (!isValidTurn(pieceColor)) return;
@@ -191,6 +195,9 @@ function switchTurn() {
 
 			//TODO якщо хід не правильний то відмінити
 			//якщо немає маркера не ходим
+			// Функція для перемикання черги ходу
+
+
 
 
                     targetCell.appendChild(piece);
