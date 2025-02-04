@@ -99,7 +99,7 @@ function switchTurn() {
             const col = position % 8;
 
             const directions = {
-                pawn: piece.alt.includes('white') ? [[-1, 0]] : [[1, 0]],
+                pawn: piece.alt.includes('white') ? [[1, 0]] : [[-1, 0]],
                 rook: [[1, 0], [-1, 0], [0, 1], [0, -1]],
                 bishop: [[1, 1], [1, -1], [-1, 1], [-1, -1]],
                 queen: [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]],
