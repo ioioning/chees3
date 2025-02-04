@@ -122,6 +122,7 @@ function switchTurn() {
                     }
                     moves.push(newIndex);
                     if (piece.alt.split(' ')[1] === 'knight' || piece.alt.split(' ')[1] === 'king') break; // Single move for knight or king
+                    if (piece.alt.split(' ')[1] === 'pawn') break; // Single move for pawn TODO allow moving two rows for the first move, allow to take diagonally.
                     newRow += dr;
                     newCol += dc;
                 }
