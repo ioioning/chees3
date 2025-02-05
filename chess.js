@@ -110,19 +110,31 @@ function switchTurn() {
             const moveRules = directions[piece.alt.split(' ')[1]] || [];
 
             moveRules.forEach(([dr, dc]) => {
+		let next = true;
                 let newRow = row + dr;
                 let newCol = col + dc;
                 while (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8) {
                     const newIndex = newRow * 8 + newCol;
-                    if (isOccupied(newIndex)) {
+                    if (piece.alt.split(' ')[1] === 'knight' || piece.alt.split(' ')[1] === 'king') next = false; // Single move for knight or king
+                    if (piece.alt.split(' ')[1] === 'pawn') {
+			    //TODO перевірити ряд якщо перший ряд можемо ходити на одну або дві клітинки
+                            if (row == 1 ||row == 6) {
+				    // TODO дозволити ходити на дві клітинки
+                                    moves.push(piece.alt.includes('white') ? position+16 : position-16); // хід дві клітини 
+	                   }
+			    //TODO перевірити чи є можливість забрати фігуру противника по діогоналі
+			   // break; // Single move for pawn TODO allow moving two rows for the first move, allow to take diagonally.
+			    next = false;
+		    }
+		    if (isOccupied(newIndex)) {
                         if (document.querySelector(`.cell[data-index="${newIndex}"] .piece`).alt.split(' ')[0] !== piece.alt.split(' ')[0]) {
                             moves.push(newIndex); // Capture move
                         }
-                        break; // Stop if a piece blocks the path
+                       // break; // Stop if a piece blocks the path
+			    next = false;
                     }
                     moves.push(newIndex);
-                    if (piece.alt.split(' ')[1] === 'knight' || piece.alt.split(' ')[1] === 'king') break; // Single move for knight or king
-                    if (piece.alt.split(' ')[1] === 'pawn') break; // Single move for pawn TODO allow moving two rows for the first move, allow to take diagonally.
+			if (!next) break;
                     newRow += dr;
                     newCol += dc;
                 }
