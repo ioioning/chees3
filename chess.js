@@ -99,7 +99,7 @@ function switchTurn() {
             const col = position % 8;
 
             const directions = {
-                pawn: piece.alt.includes('white') ? [[-1, 0]] : [[1, 0]],
+                pawn: piece.alt.includes('white') ? [[1, 0]] : [[-1, 0]],
                 rook: [[1, 0], [-1, 0], [0, 1], [0, -1]],
                 bishop: [[1, 1], [1, -1], [-1, 1], [-1, -1]],
                 queen: [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]],
@@ -122,6 +122,7 @@ function switchTurn() {
                     }
                     moves.push(newIndex);
                     if (piece.alt.split(' ')[1] === 'knight' || piece.alt.split(' ')[1] === 'king') break; // Single move for knight or king
+                    if (piece.alt.split(' ')[1] === 'pawn') break; // Single move for pawn TODO allow moving two rows for the first move, allow to take diagonally.
                     newRow += dr;
                     newCol += dc;
                 }
@@ -204,7 +205,6 @@ function switchTurn() {
                     targetCell.classList.remove('highlight');
 
                     // Show modal if a pawn reaches the last row
-			//TODO цей код працює тільки для білого пішака, треба зробити аналогічний код для чорного
                     if (piece.alt.includes('pawn') && (targetCell.dataset.index < 8 || targetCell.dataset.index > 55)) {
                         promotionTargetCell = targetCell;
                         showModal();
@@ -227,9 +227,10 @@ function switchTurn() {
         function promotePawn(newType) {
             if (promotionTargetCell) {
                 const piece = promotionTargetCell.querySelector('.piece');
+		const pieceColor = piece.alt.split(' ')[0]
                 if (piece) {
-                    piece.src = `./images/white_${newType}.jpg`;
-                    piece.alt = `white ${newType}`;
+                    piece.src = `./images/${pieceColor}_${newType}.png`;
+                    piece.alt = `${pieceColor} ${newType}`;
                 }
             }
             closeModal();
