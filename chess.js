@@ -205,7 +205,6 @@ function switchTurn() {
                     targetCell.classList.remove('highlight');
 
                     // Show modal if a pawn reaches the last row
-			//TODO цей код працює тільки для білого пішака, треба зробити аналогічний код для чорного
                     if (piece.alt.includes('pawn') && (targetCell.dataset.index < 8 || targetCell.dataset.index > 55)) {
                         promotionTargetCell = targetCell;
                         showModal();
@@ -228,9 +227,10 @@ function switchTurn() {
         function promotePawn(newType) {
             if (promotionTargetCell) {
                 const piece = promotionTargetCell.querySelector('.piece');
+		const pieceColor = piece.alt.split(' ')[0]
                 if (piece) {
-                    piece.src = `./images/white_${newType}.jpg`;
-                    piece.alt = `white ${newType}`;
+                    piece.src = `./images/${pieceColor}_${newType}.png`;
+                    piece.alt = `${pieceColor} ${newType}`;
                 }
             }
             closeModal();
