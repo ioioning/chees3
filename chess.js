@@ -117,18 +117,32 @@ function switchTurn() {
                     const newIndex = newRow * 8 + newCol;
                     if (piece.alt.split(' ')[1] === 'knight' || piece.alt.split(' ')[1] === 'king') next = false; // Single move for knight or king
                     if (piece.alt.split(' ')[1] === 'pawn') {
-			    //TODO перевірити ряд якщо перший ряд можемо ходити на одну або дві клітинки
                             if (row == 1 ||row == 6) {
-				    // TODO дозволити ходити на дві клітинки
                                     moves.push(piece.alt.includes('white') ? position+16 : position-16); // хід дві клітини 
-	                   }
-			    //TODO перевірити чи є можливість забрати фігуру противника по діогоналі
-			   // break; // Single move for pawn TODO allow moving two rows for the first move, allow to take diagonally.
+	                    }
+			    if (newCol !== 0) {
+		                     if (isOccupied(newIndex-1)) {
+                                              if (document.querySelector(`.cell[data-index="${newIndex-1}"] .piece`).alt.split(' ')[0] !== piece.alt.split(' ')[0]) {
+                                                       moves.push(newIndex-1); // Capture move
+			                      }
+			             }
+			    }
+			    if (newCol !== 7) {
+		                     if (isOccupied(newIndex+1)) {
+                                              if (document.querySelector(`.cell[data-index="${newIndex+1}"] .piece`).alt.split(' ')[0] !== piece.alt.split(' ')[0]) {
+                                                       moves.push(newIndex+1); // Capture move
+			                      }
+			             }
+			    }
 			    next = false;
 		    }
 		    if (isOccupied(newIndex)) {
                         if (document.querySelector(`.cell[data-index="${newIndex}"] .piece`).alt.split(' ')[0] !== piece.alt.split(' ')[0]) {
-                            moves.push(newIndex); // Capture move
+                            if (piece.alt.split(' ')[1] !== 'pawn') {
+                                    moves.push(newIndex); // Capture move
+                            } else {
+				    break
+			    }
                         }
                        // break; // Stop if a piece blocks the path
 			    next = false;
