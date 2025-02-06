@@ -287,7 +287,9 @@ function getPossibleMoves(piece, position) {
             if (piece.alt.split(' ')[1] === 'knight' || piece.alt.split(' ')[1] === 'king') next = false; // Single move for knight or king
             if (piece.alt.split(' ')[1] === 'pawn') {
                 if (row == 1 || row == 6) {
-                    moves.push(piece.alt.includes('white') ? position + 16 : position - 16); // хід дві клітини 
+                    if (!isOccupied(newIndex)) {
+                        moves.push(piece.alt.includes('white') ? position + 16 : position - 16); // хід дві клітини
+                    }
                 }
                 if (newCol !== 0) {
                     if (isOccupied(newIndex - 1)) {
