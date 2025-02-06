@@ -314,9 +314,10 @@ function getPossibleMoves(piece, position) {
                     } else {
                         break
                     }
-                }
-                // break; // Stop if a piece blocks the path
-                next = false;
+                    next = false;
+                } else {
+	            break
+		}
             }
             moves.push(newIndex);
             if (!next) break;
