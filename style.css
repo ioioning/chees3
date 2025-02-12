@@ -85,3 +85,9 @@
         .modal-content button:hover {
             background-color: #0056b3;
         }
+
+	.last-move {
+            background-color: rgba(255, 255, 255, 0.5) !important;
+            border: 2px solid #fff;
+        }
+
