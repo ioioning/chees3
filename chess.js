@@ -1,6 +1,9 @@
 // Змінна для відстеження поточного гравця
 let currentTurn = 'white'; // Білі ходять першими
 
+let history = []; // Масив ходів
+let historyIndex = -1; // Поточний індекс у історії
+
 // Функція для перевірки, чи можна зробити хід
 function isValidTurn(pieceColor) {
     if (pieceColor !== currentTurn) {
@@ -196,6 +199,33 @@ const pieces = [
     }
 ];
 
+// Функція для збереження конкретного ходу
+function saveMove(piece, fromIndex, toIndex) {
+    const move = {
+        pieceType: piece.alt.split(' ')[1],
+        pieceColor: piece.alt.split(' ')[0],
+        from: fromIndex,
+        to: toIndex
+    };
+
+    history = history.slice(0, historyIndex + 1); // Видаляємо "майбутні" ходи, якщо ми зробили новий
+    history.push(move);
+    historyIndex++;
+
+    highlightLastMove(fromIndex, toIndex);
+}
+
+// Функція для підсвічування останнього ходу
+function highlightLastMove(fromIndex, toIndex) {
+    document.querySelectorAll('.cell').forEach(cell => cell.classList.remove('last-move')); // Очистити попередні підсвічування
+
+    const fromCell = document.querySelector(`.cell[data-index="${fromIndex}"]`);
+    const toCell = document.querySelector(`.cell[data-index="${toIndex}"]`);
+
+    if (fromCell) fromCell.classList.add('last-move');
+    if (toCell) toCell.classList.add('last-move');
+}
+
 // Place pieces on the board
 pieces.forEach(piece => {
     const pieceElement = document.createElement('img');
@@ -353,6 +383,43 @@ board.addEventListener('dragstart', event => {
         highlightMoves(moves);
     }
 });
+// Функція для скасування ходу (назад)
+function undoMove() {
+    if (historyIndex < 0) return;
+
+    const lastMove = history[historyIndex];
+    const fromCell = document.querySelector(`.cell[data-index="${lastMove.from}"]`);
+    const toCell = document.querySelector(`.cell[data-index="${lastMove.to}"]`);
+    
+    if (fromCell && toCell) {
+        const piece = toCell.querySelector('.piece');
+        if (piece) {
+            fromCell.appendChild(piece);
+        }
+    }
+
+    historyIndex--;
+    highlightLastMove(lastMove.to, lastMove.from); // Підсвічуємо відкат
+}
+// Функція для повторення ходу (вперед)
+function redoMove() {
+    if (historyIndex >= history.length - 1) return;
+
+    historyIndex++;
+    const nextMove = history[historyIndex];
+
+    const fromCell = document.querySelector(`.cell[data-index="${nextMove.from}"]`);
+    const toCell = document.querySelector(`.cell[data-index="${nextMove.to}"]`);
+    
+    if (fromCell && toCell) {
+        const piece = fromCell.querySelector('.piece');
+        if (piece) {
+            toCell.appendChild(piece);
+        }
+    }
+
+    highlightLastMove(nextMove.from, nextMove.to);
+}
 
 board.addEventListener('dragover', event => {
     event.preventDefault();
@@ -407,6 +474,7 @@ board.addEventListener('drop', event => {
                 promotionTargetCell = targetCell;
                 showModal();
             }
+	    saveMove(piece, fromCell.dataset.index, targetCell.dataset.index)
             // Після успішного ходу перемикаємо хід
             switchTurn();
         }
