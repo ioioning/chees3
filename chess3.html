@@ -8,8 +8,11 @@
 
 </head>
 <body>
-    <div class="board" id="chessboard"></div>
+	<div>	<div style="background-image: url(&quot;images/white--sm.svg&quot;); width: 2.4rem; height: 2.4rem;" data-playing-as-selected="false"><!----></div><div style="background-image: url(&quot;images/random.svg&quot;); width: 2.4rem; height: 2.4rem;" data-playing-as-selected="false"><!----></div><div style="background-image: url(&quot;images/black--sm.svg&quot;); width: 2.4rem; height: 2.4rem;" data-playing-as-selected="true"><!----></div></div>
+    <div class="board" id="chessboard" data-play-as="black" ></div>
 
+            <button onclick="undoMove()">back</button>
+            <button onclick="redoMove()">front</button>
     <div class="modal" id="promotionModal">
         <div class="modal-content">
             <p>Choose a piece for promotion:</p>
