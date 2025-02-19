@@ -13,9 +13,12 @@ function isValidTurn(pieceColor) {
     return true;
 }
 
+
+const eyes = document.getElementById('eyes');
 // Функція для перемикання черги ходу
 function switchTurn() {
     currentTurn = currentTurn === 'white' ? 'black' : 'white';
+    eyes.src = `./images/eyes_${currentTurn}.png`;
 }
 const board = document.getElementById('chessboard');
 const modal = document.getElementById('promotionModal');
@@ -420,6 +423,99 @@ function redoMove() {
 
     highlightLastMove(nextMove.from, nextMove.to);
 }
+
+//функція повернення до останього ходу
+function lastMove() {
+    if (historyIndex <= history.length - 1) {
+        while (historeIndex <= history.lenght -1) redoMove();
+    }
+}
+
+function isKingInCheck(color) {
+    const king = document.querySelector(`.piece[alt="${color} king"]`);
+    if (!king) return false;
+
+    const kingPosition = parseInt(king.parentNode.dataset.index);
+    const opponentColor = color === 'white' ? 'black' : 'white';
+    
+    // Перевіряємо, чи може будь-яка фігура суперника атакувати короля
+    const opponentPieces = document.querySelectorAll(`.piece[alt^="${opponentColor}"]`);
+    for (let piece of opponentPieces) {
+        const piecePosition = parseInt(piece.parentNode.dataset.index);
+        const possibleMoves = getPossibleMoves(piece, piecePosition);
+        if (possibleMoves.includes(kingPosition)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function filterMoves(piece, moves) {
+    const validMoves = [];
+    const originalPosition = parseInt(piece.parentNode.dataset.index);
+
+    for (let move of moves) {
+        const targetCell = document.querySelector(`.cell[data-index="${move}"]`);
+        const capturedPiece = targetCell.querySelector('.piece');
+
+        // Тимчасово зробимо хід
+        targetCell.appendChild(piece);
+
+        if (!isKingInCheck(piece.alt.split(' ')[0])) {
+            validMoves.push(move);
+        }
+
+        // Скасовуємо хід
+        document.querySelector(`.cell[data-index="${originalPosition}"]`).appendChild(piece);
+        if (capturedPiece) targetCell.appendChild(capturedPiece);
+    }
+
+    return validMoves;
+}
+
+function removesCheck(piece, fromIndex, toIndex) {
+    const originalPiece = document.querySelector(`.cell[data-index="${toIndex}"] .piece`);
+
+    // Симулюємо хід
+    document.querySelector(`.cell[data-index="${toIndex}"]`).appendChild(piece);
+    document.querySelector(`.cell[data-index="${fromIndex}"]`).innerHTML = '';
+
+    const stillInCheck = isKingInCheck(piece.alt.split(' ')[0]);
+
+    // Відкат змін
+    document.querySelector(`.cell[data-index="${fromIndex}"]`).appendChild(piece);
+    if (originalPiece) {
+        document.querySelector(`.cell[data-index="${toIndex}"]`).appendChild(originalPiece);
+    } else {
+        document.querySelector(`.cell[data-index="${toIndex}"]`).innerHTML = '';
+    }
+
+    return !stillInCheck;
+}
+
+board.addEventListener('dragstart', event => {
+    if (!event.target.classList.contains('piece')) return;
+    
+    const fromIndex = parseInt(event.target.parentNode.dataset.index);
+    const piece = event.target;
+    const pieceColor = piece.alt.split(' ')[0];
+
+    if (!isValidTurn(pieceColor)) return;
+
+    const moves = getPossibleMoves(piece, fromIndex);
+
+    // Якщо є шах, залишаємо лише ті ходи, які можуть його вирішити
+    if (isKingInCheck(pieceColor)) {
+        const validMoves = moves.filter(move => removesCheck(piece, fromIndex, move));
+        if (validMoves.length === 0) return; // Якщо немає можливих ходів — не дозволяємо рухати фігуру
+
+        clearMarkers();
+        highlightMoves(validMoves);
+    } else {
+        clearMarkers();
+        highlightMoves(moves);
+    }
+});
 
 board.addEventListener('dragover', event => {
     event.preventDefault();
